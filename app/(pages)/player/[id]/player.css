@@ -1,0 +1,34 @@
+.player__wrapper {
+    background-color: #f1f6f4;
+    padding: 32px;
+}
+
+.player__container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 48px;
+    border-radius: 8px;
+}
+
+.player__container--skeleton {
+    max-width: 800px;
+    margin: 0 auto;
+    height: calc(100vh - 64px);
+}
+
+.player__title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #032b41;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.player__summary {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #394547;
+    margin-bottom: 48px;
+    text-align: justify;
+}

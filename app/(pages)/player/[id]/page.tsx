@@ -1,20 +1,54 @@
+"use client";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { Book } from "@/src/types";
+import Skeleton from "@/src/components/Skeleton";
+import AudioPlayer from "@/src/components/AudioPlayer";
+import "./player.css";
 
-import React from 'react';
-import { books } from '@/src/mock-data';
+const PlayerPage = () => {
+  const { id } = useParams();
+  const [book, setBook] = useState<Book | null>(null);
+  const [loading, setLoading] = useState(true);
 
-const PlayerPage = ({ params }) => {
-  const book = books.find((book) => book.id === parseInt(params.id));
+  useEffect(() => {
+    const fetchBook = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `https://us-central1-summaristt.cloudfunctions.net/getBook?id=${id}`
+        );
+        const data = await res.json();
+        setBook(data);
+      } catch (error) {
+        console.error("Error fetching book:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!book) {
-    return <div>Book not found</div>;
-  }
+    if (id) {
+      fetchBook();
+    }
+  }, [id]);
 
   return (
-    <div className="player-page">
-      <h1>{book.title}</h1>
-      <h2>{book.author}</h2>
-      <audio controls src="/placeholder-audio.mp3" />
-      <p>Book summary will be displayed here.</p>
+    <div className="player__wrapper">
+      {loading ? (
+        <div className="player__container--skeleton">
+          <Skeleton width="100%" height="100%" />
+        </div>
+      ) : book ? (
+        <div className="player__container">
+          <div className="player__title">{book.title}</div>
+          <div className="player__summary" style={{ whiteSpace: "pre-line" }}>
+            {book.summary}
+          </div>
+          <AudioPlayer audioSrc={book.audioLink} />
+        </div>
+      ) : (
+        <div>Book not found.</div>
+      )}
     </div>
   );
 };
