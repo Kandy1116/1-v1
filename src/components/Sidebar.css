@@ -1,0 +1,27 @@
+
+.sidebar {
+  width: 200px;
+  height: 100vh;
+  background-color: #f0f0f0;
+  padding: 20px;
+}
+
+.sidebar__logo {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.sidebar__links {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar__links li {
+  margin-bottom: 10px;
+}
+
+.sidebar__links a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
