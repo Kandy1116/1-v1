@@ -4,6 +4,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { auth } from '@/src/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 
 const UserContext = createContext();
 
@@ -12,6 +13,7 @@ export const useUser = () => {
 };
 
 export const UserProvider = ({ children }) => {
+  const router = useRouter();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -30,6 +32,7 @@ export const UserProvider = ({ children }) => {
 
   const logout = async () => {
     await signOut(auth);
+    router.push('/');
   };
 
   const value = {

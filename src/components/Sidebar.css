@@ -51,10 +51,12 @@
   gap: 16px;
   padding: 12px 0;
   font-size: 16px;
+  font-family: 'Roboto', sans-serif;
   color: #6b7280; /* Inactive color */
   text-decoration: none;
-  font-weight: 500;
+  font-weight: bold;
   transition: color 0.2s ease;
+  cursor: pointer;
 }
 
 .sidebar__link--active {

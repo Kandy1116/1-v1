@@ -12,6 +12,8 @@ import {
 } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/src/UserContext';
+import { db } from '@/src/firebase';
+import { doc, setDoc } from 'firebase/firestore';
 import { FaUser, FaTimes } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 
@@ -86,7 +88,12 @@ const AuthModal = () => {
     setLoading(true);
     setError('');
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        email: userCredential.user.email,
+        savedBooks: [],
+        finishedBooks: [],
+      });
       router.push('/for-you');
       closeModal();
     } catch (error) {

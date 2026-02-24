@@ -3,6 +3,9 @@ import { useState, useRef, useEffect } from 'react';
 import { Book } from "@/src/types";
 import { FaPlay, FaPause } from 'react-icons/fa';
 import { MdForward10, MdReplay10 } from "react-icons/md";
+import { useUser } from '@/src/UserContext';
+import { db } from '@/src/firebase';
+import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import './AudioPlayer.css';
 
 interface AudioPlayerProps {
@@ -10,6 +13,7 @@ interface AudioPlayerProps {
 }
 
 const AudioPlayer: React.FC<AudioPlayerProps> = ({ book }) => {
+  const { user } = useUser();
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -17,6 +21,15 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ book }) => {
   const audioPlayer = useRef<HTMLAudioElement>(null);
   const progressBar = useRef<HTMLInputElement>(null);
   const animationRef = useRef<number>();
+
+  const markAsFinished = async () => {
+    if (user && book) {
+        const userDocRef = doc(db, "users", user.uid);
+        await updateDoc(userDocRef, {
+            finishedBooks: arrayUnion(book.id)
+        });
+    }
+  };
 
   useEffect(() => {
     if (audioPlayer.current) {
@@ -92,7 +105,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ book }) => {
             const seconds = Math.floor(audioPlayer.current!.duration);
             setDuration(seconds);
             progressBar.current!.max = String(seconds);
-        }}></audio>
+        }} onEnded={markAsFinished}></audio>
         <div className="audio-player__book-info">
             <figure className="audio-player__book-image--wrapper">
                 <img src={book.imageLink} alt={book.title} />

@@ -13,9 +13,12 @@ import {
 } from "react-icons/fa";
 import Skeleton from "@/src/components/Skeleton";
 import { useUser } from "@/src/UserContext";
+import { db } from "@/src/firebase";
+import { doc, updateDoc, arrayUnion, arrayRemove, getDoc } from "firebase/firestore";
 
 const BookPage = () => {
-  const { id } = useParams();
+  const params = useParams();
+  const id = Array.isArray(params.id) ? params.id[0] : (params.id as string);
   const router = useRouter();
   const { user, openModal } = useUser();
   const [book, setBook] = useState<Book | null>(null);
@@ -24,8 +27,9 @@ const BookPage = () => {
 
   useEffect(() => {
     const fetchBook = async () => {
+      if (!id) return;
+      setLoading(true);
       try {
-        setLoading(true);
         const res = await fetch(
           `https://us-central1-summaristt.cloudfunctions.net/getBook?id=${id}`
         );
@@ -37,11 +41,31 @@ const BookPage = () => {
         setLoading(false);
       }
     };
-
-    if (id) {
-      fetchBook();
-    }
+    fetchBook();
   }, [id]);
+
+  useEffect(() => {
+    const checkSavedStatus = async () => {
+      if (!user || !id) {
+        setIsSaved(false);
+        return;
+      }
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          const userData = userDocSnap.data();
+          setIsSaved(userData.savedBooks && userData.savedBooks.includes(id));
+        } else {
+          setIsSaved(false);
+        }
+      } catch (error) {
+        console.error("Error checking saved status:", error);
+        setIsSaved(false);
+      }
+    };
+    checkSavedStatus();
+  }, [id, user]);
 
   const handleInteraction = (action: 'read' | 'listen') => {
     if (!user) {
@@ -56,18 +80,33 @@ const BookPage = () => {
     }
   };
 
-  const toggleSaved = (e: React.MouseEvent) => {
+  const toggleSaved = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!user) {
       openModal();
       return;
     }
-    setIsSaved(!isSaved);
-    // API call to save/unsave would go here
+    const userDocRef = doc(db, "users", user.uid);
+    try {
+      if (isSaved) {
+        await updateDoc(userDocRef, {
+          savedBooks: arrayRemove(id)
+        });
+        setIsSaved(false);
+      } else {
+        await updateDoc(userDocRef, {
+          savedBooks: arrayUnion(id)
+        });
+        setIsSaved(true);
+      }
+    } catch (error) {
+      console.error("Error updating saved status:", error);
+    }
   };
 
   const formatTime = (seconds: number) => {
+    if (isNaN(seconds)) return "N/A";
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
@@ -162,11 +201,11 @@ const BookPage = () => {
                   <span>Listen</span>
                 </button>
               </div>
-              <button onClick={toggleSaved} className="book__add-to-library-btn">
+              <button onClick={toggleSaved} className={`book__add-to-library-btn ${isSaved ? 'book__saved' : ''}`}>
                 <div className="book__save-icon">
                   {isSaved ? <FaBookmark /> : <FaRegBookmark />}
                 </div>
-                <span>Add title to My Library</span>
+                <span>{isSaved ? "Saved in My Library" : "Add title to My Library"}</span>
               </button>
             </div>
             <figure className="book__image--wrapper">
