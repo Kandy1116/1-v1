@@ -1,69 +1,117 @@
-
 'use client';
-import React from 'react';
-import { loadStripe } from '@stripe/stripe-js';
+import { useState } from 'react';
+import { FaCheckCircle } from 'react-icons/fa';
+import './choose-plan.css';
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-
-
-  const handleCheckout = async (priceId) => {
-    try {
-      const response = await fetch('/api/checkout_sessions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ priceId }),
-      });
-
-      const { sessionId } = await response.json();
-
-      const stripe = await stripePromise;
-      const { error } = await stripe.redirectToCheckout({ sessionId });
-
-      if (error) {
-        console.log(error);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+const AccordionItem = ({ title, content }) => {
+    const [isOpen, setIsOpen] = useState(false);
+  
+    return (
+      <div className="accordion__item">
+        <button className="accordion__title" onClick={() => setIsOpen(!isOpen)}>
+          <span>{title}</span>
+          <span className={`accordion__icon ${isOpen ? 'accordion__icon--open' : ''}`}>&#x25B2;</span>
+        </button>
+        {isOpen && <div className="accordion__content">{content}</div>}
+      </div>
+    );
+};
 
 const ChoosePlanPage = () => {
+  const [isYearly, setIsYearly] = useState(true);
+
+  const handleCheckout = (plan: 'monthly' | 'yearly') => {
+    // Stripe checkout logic will go here
+    console.log(`Checking out for ${plan} plan`);
+  };
+
+  const faqs = [
+    {
+      title: "How does the free 7-day trial work?",
+      content: "Begin your complimentary 7-day trial with a Summarist annual membership. You are under no obligation to continue your subscription, and you will only be billed when the trial period expires. With Premium access, you can learn at your own pace and as frequently as you desire, and you may terminate your subscription prior to the conclusion of the 7-day free trial."
+    },
+    {
+      title: "Can I switch subscriptions from monthly to yearly, or yearly to monthly?",
+      content: "While an annual plan is active, it is not feasible to switch to a monthly plan. However, once the current month ends, transitioning from a monthly plan to an annual plan is an option."
+    },
+    {
+      title: "What's included in the Premium plan?",
+      content: "Premium membership provides you with the ultimate Summarist experience, including unrestricted entry to many best-selling books, high-quality audio, the ability to download titles for offline reading, and the option to send your reads to your Kindle."
+    },
+    {
+      title: "Can I cancel during my trial or subscription?",
+      content: "You will not be charged if you cancel your trial before its conclusion. While you will not have complete access to the entire Summarist library, you can still expand your knowledge with one curated book per day."
+    }
+  ];
+
   return (
-    <div className="choose-plan-page">
-      <h1>Choose Your Plan</h1>
-      <div className="plans">
-        <div className="plan">
-          <h2>Basic</h2>
-          <p className="price">$9.99/month</p>
-          <ul>
-            <li>Access to a limited number of books</li>
-            <li>Read on one device</li>
-          </ul>
-          <button onClick={() => handleCheckout('YOUR_STRIPE_PRICE_ID_BASIC')}>Choose Plan</button>
+    <div className="choose-plan__wrapper">
+        <div className="choose-plan__container">
+            <div className="choose-plan__header">
+                <h1 className="choose-plan__title">Get unlimited access to many amazing books to read</h1>
+                <h2 className="choose-plan__sub-title">Turn ordinary moments into amazing learning opportunities</h2>
+            </div>
+
+            <div className="choose-plan__plans-container">
+                <div className="choose-plan__toggle-wrapper">
+                    <div className="choose-plan__toggle-option">Monthly</div>
+                    <div className="choose-plan__toggle-switch" onClick={() => setIsYearly(!isYearly)}>
+                        <div className={`choose-plan__toggle-slider ${isYearly ? 'yearly' : 'monthly'}`}></div>
+                    </div>
+                    <div className="choose-plan__toggle-option">Yearly</div>
+                </div>
+
+                <div className="choose-plan__plans">
+                    <div className={`plan-card ${!isYearly ? 'plan-card--active' : ''}`}>
+                        <div className="plan-card__header">Premium</div>
+                        <div className="plan-card__price">$9.99/month</div>
+                        <div className="plan-card__features">
+                            <div className="plan-card__feature">
+                                <FaCheckCircle /><span>Unlimited books</span>
+                            </div>
+                            <div className="plan-card__feature">
+                                <FaCheckCircle /><span>Unlimited audio</span>
+                            </div>
+                            <div className="plan-card__feature">
+                                <FaCheckCircle /><span>Cancel anytime</span>
+                            </div>
+                        </div>
+                        <button className="plan-card__btn" onClick={() => handleCheckout('monthly')}>
+                            Start with Premium
+                        </button>
+                    </div>
+
+                    <div className={`plan-card ${isYearly ? 'plan-card--active' : ''}`}>
+                        <div className="plan-card__header">Premium Plus</div>
+                        <div className="plan-card__price">$99.99/year</div>
+                        <p className="plan-card__trial">7-day free trial included</p>
+                        <div className="plan-card__features">
+                            <div className="plan-card__feature">
+                                <FaCheckCircle /><span>Unlimited books</span>
+                            </div>
+                            <div className="plan-card__feature">
+                                <FaCheckCircle /><span>Unlimited audio</span>
+                            </div>
+                            <div className="plan-card__feature">
+                                <FaCheckCircle /><span>Cancel anytime</span>
+                            </div>
+                            <div className="plan-card__feature">
+                                <FaCheckCircle /><span>Send to Kindle</span>
+                            </div>
+                        </div>
+                        <button className="plan-card__btn" onClick={() => handleCheckout('yearly')}>
+                            Start your free 7-day trial
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div className="choose-plan__accordion">
+                {faqs.map((faq, index) => (
+                    <AccordionItem key={index} title={faq.title} content={faq.content} />
+                ))}
+            </div>
         </div>
-        <div className="plan premium">
-          <h2>Premium</h2>
-          <p className="price">$19.99/month</p>
-          <ul>
-            <li>Unlimited access to all books</li>
-            <li>Read on multiple devices</li>
-            <li>Offline reading</li>
-          </ul>
-          <button onClick={() => handleCheckout('YOUR_STRIPE_PRICE_ID_PREMIUM')}>Choose Plan</button>
-        </div>
-        <div className="plan for-business">
-          <h2>For Business</h2>
-          <p className="price">Contact Us</p>
-          <ul>
-            <li>All Premium features</li>
-            <li>Team management</li>
-            <li>Dedicated support</li>
-          </ul>
-          <button>Contact Us</button>
-        </div>
-      </div>
     </div>
   );
 };

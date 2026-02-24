@@ -11,6 +11,7 @@
     justify-content: space-between;
     padding: 0 32px;
     z-index: 1000;
+    gap: 24px;
 }
 
 .audio-player__book-info {
@@ -91,6 +92,7 @@
     font-size: 12px;
     width: 40px;
     text-align: center;
+    flex-shrink: 0;
 }
 
 .audio-player__progress-bar {
@@ -140,31 +142,28 @@
     z-index: -1;
 }
 
+/* Responsive Styles */
 @media (max-width: 768px) {
     .audio-player__wrapper {
-      flex-wrap: wrap;
-      height: auto;
-      padding: 16px;
-      gap: 16px 0;
+        flex-wrap: wrap;
+        height: auto;
+        padding: 16px;
+        row-gap: 16px;
     }
-  
-    .audio-player__progress-wrapper {
-      order: 1;
-      width: 100%;
-      flex-basis: 100%;
-    }
-  
-    .audio-player__time {
-      display: none;
-    }
-  
+
     .audio-player__book-info {
-      order: 2;
-      flex-grow: 1;
+        order: 1;
+        flex-basis: 70%;
     }
-  
+
     .audio-player__main-controls {
-      order: 3;
-      padding-left: 16px;
+        order: 2;
+        flex-basis: 30%;
+        justify-content: flex-end;
     }
-  }
+
+    .audio-player__progress-wrapper {
+        order: 3;
+        flex-basis: 100%;
+    }
+}
