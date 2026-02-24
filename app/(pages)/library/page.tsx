@@ -1,11 +1,10 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '@/src/firebase';
+import { db } from '@/src/firebase';
 import { useUser } from '@/src/UserContext';
 import Book from '@/src/types/Book';
 import './library.css';
-import BookPill from '@/src/components/BookPill';
 import BookCard from '@/src/components/BookCard';
 import Skeleton from '@/src/components/Skeleton';
 
@@ -17,36 +16,49 @@ const LibraryPage = () => {
 
   useEffect(() => {
     const fetchUserBooks = async () => {
-      if (user) {
-        setLoading(true);
+      if (!user) {
+        setLoading(false);
+        setSavedBooks([]);
+        setFinishedBooks([]);
+        return;
+      }
+
+      setLoading(true);
+      try {
         const userDocRef = doc(db, 'users', user.uid);
         const userDocSnap = await getDoc(userDocRef);
 
         if (userDocSnap.exists()) {
           const userData = userDocSnap.data();
 
-          // Fetch saved books
+          // Safely fetch saved books
           if (userData.savedBooks && userData.savedBooks.length > 0) {
-            const savedBooksPromises = userData.savedBooks.map((bookId: string) => getDoc(doc(db, 'books', bookId)));
-            const savedBooksDocs = await Promise.all(savedBooksPromises);
-            const savedBooksData = savedBooksDocs.map(doc => ({ ...doc.data(), id: doc.id }) as Book);
-            setSavedBooks(savedBooksData);
+            const savedBooksPromises = userData.savedBooks.map(bookId => getDoc(doc(db, 'books', bookId)));
+            const savedBooksResults = await Promise.all(savedBooksPromises.map(p => p.catch(e => e)));
+            const validSavedBooks = savedBooksResults.filter(result => !(result instanceof Error) && result.exists()).map(doc => ({ ...doc.data(), id: doc.id }) as Book);
+            setSavedBooks(validSavedBooks);
           } else {
             setSavedBooks([]);
           }
 
-          // Fetch finished books
+          // Safely fetch finished books
           if (userData.finishedBooks && userData.finishedBooks.length > 0) {
-            const finishedBooksPromises = userData.finishedBooks.map((bookId: string) => getDoc(doc(db, 'books', bookId)));
-            const finishedBooksDocs = await Promise.all(finishedBooksPromises);
-            const finishedBooksData = finishedBooksDocs.map(doc => ({ ...doc.data(), id: doc.id }) as Book);
-            setFinishedBooks(finishedBooksData);
+            const finishedBooksPromises = userData.finishedBooks.map(bookId => getDoc(doc(db, 'books', bookId)));
+            const finishedBooksResults = await Promise.all(finishedBooksPromises.map(p => p.catch(e => e)));
+            const validFinishedBooks = finishedBooksResults.filter(result => !(result instanceof Error) && result.exists()).map(doc => ({ ...doc.data(), id: doc.id }) as Book);
+            setFinishedBooks(validFinishedBooks);
           } else {
             setFinishedBooks([]);
           }
+        } else {
+          setSavedBooks([]);
+          setFinishedBooks([]);
         }
-        setLoading(false);
-      } else {
+      } catch (error) {
+        console.error("Error fetching user books:", error);
+        setSavedBooks([]);
+        setFinishedBooks([]);
+      } finally {
         setLoading(false);
       }
     };
