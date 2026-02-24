@@ -77,7 +77,32 @@ const BookPage = () => {
     <div className="book__wrapper">
       {loading ? (
         <div className="book__container--skeleton">
-          <Skeleton width="100%" height="100%" />
+          <div className="book__main-content--skeleton">
+            <div className="book__content--skeleton">
+              <Skeleton width="70%" height="36px" />
+              <Skeleton width="40%" height="20px" />
+              <Skeleton width="100%" height="80px" />
+              <div className="book__details-grid--skeleton">
+                  {Array(4).fill(0).map((_, i) => <Skeleton key={i} width="100%" height="40px" />)}
+              </div>
+              <div className="book__actions--skeleton">
+                  <Skeleton width="120px" height="48px" />
+                  <Skeleton width="120px" height="48px" />
+              </div>
+              <Skeleton width="200px" height="48px" />
+            </div>
+            <figure className="book__image--wrapper-skeleton">
+              <Skeleton width="300px" height="300px" />
+            </figure>
+          </div>
+          <div className="book__description-section--skeleton">
+              <Skeleton width="200px" height="28px" />
+              <Skeleton width="100%" height="120px" />
+          </div>
+          <div className="book__description-section--skeleton">
+              <Skeleton width="200px" height="28px" />
+              <Skeleton width="100%" height="120px" />
+          </div>
         </div>
       ) : book ? (
         <div className="book__container">

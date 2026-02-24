@@ -90,16 +90,46 @@ const ForYouPage = () => {
     <div className="for-you__wrapper">
         <div className="for-you__container">
             {loading ? (
-                <div className="foryou__container">
-                    <div className="foryou__title"><Skeleton width="200px" height="24px" /></div>
-                    <Skeleton width="100%" height="200px" />
-                    <div className="foryou__title"><Skeleton width="250px" height="24px" /></div>
-                    <div className="foryou__books-grid">
-                        {Array(3).fill(0).map((_, i) => <Skeleton key={i} width="100%" height="200px" />)}
+                <div className="for-you__container--skeleton">
+                    {/* Skeleton for "Selected just for you" */}
+                    <div className="foryou__title"><Skeleton width="240px" height="32px" /></div>
+                    <div className="selected-book__wrapper--skeleton">
+                        <div className="selected-book__details--skeleton">
+                            <figure className="selected-book__image--wrapper-skeleton">
+                                <Skeleton width="140px" height="140px" />
+                            </figure>
+                            <div className="selected-book__text--skeleton">
+                                <Skeleton width="200px" height="24px" />
+                                <Skeleton width="150px" height="20px" />
+                                <Skeleton width="100px" height="28px" />
+                            </div>
+                        </div>
                     </div>
-                    <div className="foryou__title"><Skeleton width="220px" height="24px" /></div>
+
+                    {/* Skeleton for "Recommended For You" */}
+                    <div className="foryou__title"><Skeleton width="280px" height="32px" /></div>
+                    <div className="foryou__sub-title"><Skeleton width="200px" height="20px" /></div>
                     <div className="foryou__books-grid">
-                        {Array(3).fill(0).map((_, i) => <Skeleton key={i} width="100%" height="200px" />)}
+                        {Array(3).fill(0).map((_, i) => (
+                            <div className="book-pill--skeleton" key={i}>
+                                <Skeleton width="100%" height="200px" />
+                                <Skeleton width="80%" height="20px" />
+                                <Skeleton width="60%" height="16px" />
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Skeleton for "Suggested Books" */}
+                    <div className="foryou__title"><Skeleton width="220px" height="32px" /></div>
+                    <div className="foryou__sub-title"><Skeleton width="180px" height="20px" /></div>
+                    <div className="foryou__books-grid">
+                        {Array(3).fill(0).map((_, i) => (
+                            <div className="book-pill--skeleton" key={i}>
+                                <Skeleton width="100%" height="200px" />
+                                <Skeleton width="80%" height="20px" />
+                                <Skeleton width="60%" height="16px" />
+                            </div>
+                        ))}
                     </div>
                 </div>
             ) : (

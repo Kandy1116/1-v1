@@ -124,3 +124,35 @@
     cursor: pointer;
     font-size: 24px;
 }
+
+.for-you__container--skeleton {
+    padding: 32px;
+}
+
+.selected-book__wrapper--skeleton {
+    background-color: #f9fafb;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 48px;
+}
+
+.selected-book__details--skeleton {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.selected-book__text--skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-grow: 1;
+}
+
+.book-pill--skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 200px; 
+    flex-shrink: 0;
+}

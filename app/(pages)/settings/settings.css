@@ -1,12 +1,16 @@
 .settings__wrapper {
-    background-color: #f1f6f4;
-    min-height: 100vh;
-    padding-top: 32px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 .settings__container {
-    max-width: 800px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 600px; /* Adjust as needed */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
 }
 
 .settings__title {
@@ -23,57 +27,55 @@
     color: #032b41;
 }
 
-.settings__container--logged-out {
-    text-align: center;
-}
-
-.settings__logged-out-content p {
-    font-size: 18px;
-    color: #394547;
+.settings__content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
 }
 
 .settings__section {
-    border-bottom: 2px solid #e1e7ea;
-    padding-bottom: 24px;
-    margin-bottom: 24px;
-}
-
-.settings__section:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-    margin-bottom: 0;
+    text-align: center;
 }
 
 .settings__section-title {
     font-size: 18px;
     font-weight: 700;
     color: #032b41;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     text-transform: uppercase;
 }
 
 .settings__plan-details,
 .settings__user-email {
     font-size: 16px;
-    color: #032b41;
+    color: #394547;
     font-family: 'Roboto', sans-serif;
 }
 
 .settings__plan-details {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    align-items: center;
+    gap: 16px;
 }
 
 .settings__upgrade-btn {
     background-color: #2bd97c;
-    color: #032b41;
+    color: white;
     font-size: 16px;
     font-weight: bold;
-    padding: 10px 20px;
+    padding: 12px 24px;
     border-radius: 4px;
     text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.settings__upgrade-btn:hover {
+    background-color: #22c56e;
 }
 
 .settings__plan-name--premium {
