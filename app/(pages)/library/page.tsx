@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/src/firebase';
 import { useUser } from '@/src/UserContext';
 import type { Book } from '@/types';
@@ -15,56 +15,45 @@ const LibraryPage = () => {
   const { user } = useUser();
 
   useEffect(() => {
-    const fetchUserBooks = async () => {
-      if (!user) {
-        setLoading(false);
-        setSavedBooks([]);
-        setFinishedBooks([]);
-        return;
-      }
+    if (!user) {
+      setSavedBooks([]);
+      setFinishedBooks([]);
+      setLoading(false);
+      return;
+    }
 
+    const userDocRef = doc(db, 'users', user.uid);
+    const unsubscribe = onSnapshot(userDocRef, async (userDoc) => {
       setLoading(true);
-      try {
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDocSnap = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const booksRef = collection(db, "books");
 
-        if (userDocSnap.exists()) {
-          const userData = userDocSnap.data();
-          const booksRef = collection(db, "books");
-
-          // Fetch saved books
-          if (userData.savedBooks && userData.savedBooks.length > 0) {
-            const savedBooksQuery = query(booksRef, where("__name__", "in", userData.savedBooks));
-            const savedBooksSnapshot = await getDocs(savedBooksQuery);
-            const savedBooksData = savedBooksSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }) as Book);
-            setSavedBooks(savedBooksData);
-          } else {
-            setSavedBooks([]);
-          }
-
-          // Fetch finished books
-          if (userData.finishedBooks && userData.finishedBooks.length > 0) {
-            const finishedBooksQuery = query(booksRef, where("__name__", "in", userData.finishedBooks));
-            const finishedBooksSnapshot = await getDocs(finishedBooksQuery);
-            const finishedBooksData = finishedBooksSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }) as Book);
-            setFinishedBooks(finishedBooksData);
-          } else {
-            setFinishedBooks([]);
-          }
+        if (userData.savedBooks && userData.savedBooks.length > 0) {
+          const savedBooksQuery = query(booksRef, where("__name__", "in", userData.savedBooks));
+          const savedBooksSnapshot = await getDocs(savedBooksQuery);
+          const savedBooksData = savedBooksSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }) as Book);
+          setSavedBooks(savedBooksData);
         } else {
           setSavedBooks([]);
+        }
+
+        if (userData.finishedBooks && userData.finishedBooks.length > 0) {
+          const finishedBooksQuery = query(booksRef, where("__name__", "in", userData.finishedBooks));
+          const finishedBooksSnapshot = await getDocs(finishedBooksQuery);
+          const finishedBooksData = finishedBooksSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }) as Book);
+          setFinishedBooks(finishedBooksData);
+        } else {
           setFinishedBooks([]);
         }
-      } catch (error) {
-        console.error("Error fetching user books:", error);
+      } else {
         setSavedBooks([]);
         setFinishedBooks([]);
-      } finally {
-        setLoading(false);
       }
-    };
+      setLoading(false);
+    });
 
-    fetchUserBooks();
+    return () => unsubscribe();
   }, [user]);
 
   return (
