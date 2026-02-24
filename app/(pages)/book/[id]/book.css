@@ -122,7 +122,7 @@
     gap: 8px;
     background: none;
     border: none;
-    color: #03658d;
+    color: #6b7280;
     font-size: 16px;
     font-weight: 500;
     cursor: pointer;
@@ -161,12 +161,8 @@
     font-weight: 500;
 }
 
-.book__add-to-library-btn.book__saved span {
-    color: #2bd97c;
-}
-
-.book__add-to-library-btn.book__saved .book__save-icon {
-    color: #2bd97c;
+.book__add-to-library-btn.book__saved {
+    color: #03658d;
 }
 
 .book__description-text {

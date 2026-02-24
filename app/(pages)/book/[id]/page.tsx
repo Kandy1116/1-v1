@@ -87,21 +87,24 @@ const BookPage = () => {
       openModal();
       return;
     }
+
+    const newSavedState = !isSaved;
+    setIsSaved(newSavedState);
+
     const userDocRef = doc(db, "users", user.uid);
     try {
-      if (isSaved) {
+      if (newSavedState) {
         await updateDoc(userDocRef, {
-          savedBooks: arrayRemove(id)
+          savedBooks: arrayUnion(id),
         });
-        setIsSaved(false);
       } else {
         await updateDoc(userDocRef, {
-          savedBooks: arrayUnion(id)
+          savedBooks: arrayRemove(id),
         });
-        setIsSaved(true);
       }
     } catch (error) {
       console.error("Error updating saved status:", error);
+      setIsSaved(!newSavedState); // Revert on error
     }
   };
 
