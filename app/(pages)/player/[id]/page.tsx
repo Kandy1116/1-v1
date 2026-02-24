@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Book } from "@/src/types";
+import { Book } from '@/src/types';
 import Skeleton from "@/src/components/Skeleton";
 import AudioPlayer from "@/src/components/AudioPlayer";
 import "./player.css";
@@ -40,17 +40,19 @@ const PlayerPage = () => {
                 <Skeleton width="100%" height="100%" />
                 </div>
             ) : book ? (
-                <div className="player__book-details">
-                    <h1 className="player__book-title">{book.title}</h1>
-                    <p className="player__book-summary" style={{ whiteSpace: "pre-line" }}>
-                        {book.summary}
-                    </p>
-                </div>
+                <>
+                    <div className="player__book-details">
+                        <h1 className="player__book-title">{book.title}</h1>
+                        <p className="player__book-summary" style={{ whiteSpace: "pre-line" }}>
+                            {book.summary}
+                        </p>
+                    </div>
+                    <AudioPlayer book={book} />
+                </>
             ) : (
                 <div>Book not found.</div>
             )}
         </div>
-      {book && <AudioPlayer book={book} />}
     </div>
   );
 };

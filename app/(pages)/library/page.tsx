@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/src/firebase';
 import { useUser } from '@/src/UserContext';
-import Book from '@/src/types/Book';
+import type { Book } from '@/types';
 import './library.css';
 import BookCard from '@/src/components/BookCard';
 import Skeleton from '@/src/components/Skeleton';
@@ -30,23 +30,24 @@ const LibraryPage = () => {
 
         if (userDocSnap.exists()) {
           const userData = userDocSnap.data();
+          const booksRef = collection(db, "books");
 
-          // Safely fetch saved books
+          // Fetch saved books
           if (userData.savedBooks && userData.savedBooks.length > 0) {
-            const savedBooksPromises = userData.savedBooks.map(bookId => getDoc(doc(db, 'books', bookId)));
-            const savedBooksResults = await Promise.all(savedBooksPromises.map(p => p.catch(e => e)));
-            const validSavedBooks = savedBooksResults.filter(result => !(result instanceof Error) && result.exists()).map(doc => ({ ...doc.data(), id: doc.id }) as Book);
-            setSavedBooks(validSavedBooks);
+            const savedBooksQuery = query(booksRef, where("__name__", "in", userData.savedBooks));
+            const savedBooksSnapshot = await getDocs(savedBooksQuery);
+            const savedBooksData = savedBooksSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }) as Book);
+            setSavedBooks(savedBooksData);
           } else {
             setSavedBooks([]);
           }
 
-          // Safely fetch finished books
+          // Fetch finished books
           if (userData.finishedBooks && userData.finishedBooks.length > 0) {
-            const finishedBooksPromises = userData.finishedBooks.map(bookId => getDoc(doc(db, 'books', bookId)));
-            const finishedBooksResults = await Promise.all(finishedBooksPromises.map(p => p.catch(e => e)));
-            const validFinishedBooks = finishedBooksResults.filter(result => !(result instanceof Error) && result.exists()).map(doc => ({ ...doc.data(), id: doc.id }) as Book);
-            setFinishedBooks(validFinishedBooks);
+            const finishedBooksQuery = query(booksRef, where("__name__", "in", userData.finishedBooks));
+            const finishedBooksSnapshot = await getDocs(finishedBooksQuery);
+            const finishedBooksData = finishedBooksSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }) as Book);
+            setFinishedBooks(finishedBooksData);
           } else {
             setFinishedBooks([]);
           }
@@ -72,7 +73,7 @@ const LibraryPage = () => {
         <div className="library__skeleton-wrapper">
           <Skeleton width="200px" height="32px" />
           <div className="book-list">
-            {Array(3).fill(0).map((_, i) => (
+            {Array(1).fill(0).map((_, i) => (
               <div className="book-card--skeleton" key={i}>
                 <Skeleton width="100%" height="200px" />
                 <Skeleton width="80%" height="20px" />
@@ -82,7 +83,7 @@ const LibraryPage = () => {
           </div>
           <Skeleton width="200px" height="32px" />
           <div className="book-list">
-            {Array(3).fill(0).map((_, i) => (
+            {Array(1).fill(0).map((_, i) => (
               <div className="book-card--skeleton" key={i}>
                 <Skeleton width="100%" height="200px" />
                 <Skeleton width="80%" height="20px" />

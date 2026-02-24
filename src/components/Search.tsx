@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { Book } from '@/src/types';
+import { Book } from '@/types';
 import Link from 'next/link';
 import './Search.css';
 import { FaSearch } from 'react-icons/fa';

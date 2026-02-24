@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Book } from '@/src/types';
+import { Book } from '@/types';
 import { AiFillStar } from 'react-icons/ai';
 import { FaHeadphones } from 'react-icons/fa';
 import './BookCard.css';

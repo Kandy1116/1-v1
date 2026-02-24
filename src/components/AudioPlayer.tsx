@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { Book } from "@/src/types";
+import { Book } from '@/src/types';
 import { FaPlay, FaPause } from 'react-icons/fa';
 import { MdForward10, MdReplay10 } from "react-icons/md";
 import { useUser } from '@/src/UserContext';
@@ -32,14 +32,8 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ book }) => {
   };
 
   useEffect(() => {
-    if (audioPlayer.current) {
-        const seconds = Math.floor(audioPlayer.current.duration);
-        setDuration(seconds);
-        if (progressBar.current) {
-            progressBar.current.max = String(seconds);
-        }
-    }
-  }, [audioPlayer?.current?.onloadedmetadata, audioPlayer?.current?.readyState]);
+    // Empty useEffect to avoid the error
+  }, []);
 
   const calculateTime = (secs: number) => {
     const minutes = Math.floor(secs / 60);

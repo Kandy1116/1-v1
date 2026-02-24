@@ -1,21 +1,25 @@
-
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { auth } from '@/src/firebase';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
+import { UserContextType } from '@/types';
 
-const UserContext = createContext();
+const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const useUser = () => {
-  return useContext(UserContext);
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error('useUser must be used within a UserProvider');
+  }
+  return context;
 };
 
-export const UserProvider = ({ children }) => {
+export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
@@ -44,6 +48,7 @@ export const UserProvider = ({ children }) => {
 
   const value = {
     user,
+    loading,
     logout,
     showModal,
     openModal,

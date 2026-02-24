@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { FaCheckCircle } from 'react-icons/fa';
 import './choose-plan.css';
 
-const AccordionItem = ({ title, content }) => {
+const AccordionItem = ({ title, content }: { title: string; content: string }) => {
     const [isOpen, setIsOpen] = useState(false);
   
     return (
@@ -25,7 +25,7 @@ const ChoosePlanPage = () => {
     console.log(`Checking out for ${plan} plan`);
   };
 
-  const faqs = [
+    const faqs: { title: string; content: string }[] = [
     {
       title: "How does the free 7-day trial work?",
       content: "Begin your complimentary 7-day trial with a Summarist annual membership. You are under no obligation to continue your subscription, and you will only be billed when the trial period expires. With Premium access, you can learn at your own pace and as frequently as you desire, and you may terminate your subscription prior to the conclusion of the 7-day free trial."

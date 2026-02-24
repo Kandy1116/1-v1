@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import BookPill from '@/src/components/BookPill';
 import Skeleton from '@/src/components/Skeleton';
-import { Book } from '@/src/types';
+import { Book } from '@/src/types/book';
 import './for-you.css';
 import { BsFillPlayFill, BsFillPauseFill } from 'react-icons/bs';
 import Link from 'next/link';

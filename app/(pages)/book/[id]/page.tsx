@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Book } from "@/src/types";
+import { Book } from '@/types';
 import "./book.css";
 import { AiFillStar } from "react-icons/ai";
 import {

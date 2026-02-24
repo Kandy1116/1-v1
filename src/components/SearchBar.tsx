@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { Book } from '@/src/types';
+import { Book } from '@/types';
 import Link from 'next/link';
 import './SearchBar.css';
 import { FaSearch } from 'react-icons/fa';
@@ -18,25 +18,22 @@ const SearchBar = () => {
       setIsDropdownOpen(false);
       return;
     }
-
-    const fetchResults = async () => {
+    const fetchBooks = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`https://us-central1-summaristt.cloudfunctions.net/getBooksByAuthorOrTitle?search=${query}`);
-        const data = await res.json();
+        const response = await fetch(`https://us-central1-summaristt.cloudfunctions.net/getBooksByAuthorOrTitle?search=${query}`);
+        const data = await response.json();
         setResults(data);
         setIsDropdownOpen(true);
       } catch (error) {
-        console.error('Error fetching search results:', error);
+        console.error("Error fetching books:", error);
       }
       setLoading(false);
     };
 
-    const debounceTimer = setTimeout(() => {
-      fetchResults();
-    }, 300);
+    const timeoutId = setTimeout(fetchBooks, 500);
 
-    return () => clearTimeout(debounceTimer);
+    return () => clearTimeout(timeoutId);
   }, [query]);
 
   useEffect(() => {
