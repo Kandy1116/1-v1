@@ -1,13 +1,15 @@
-"use client";
+'use client';
 import { useState, useRef, useEffect } from 'react';
-import { FaPlay, FaPause, FaForward, FaBackward } from 'react-icons/fa';
+import { Book } from "@/src/types";
+import { FaPlay, FaPause } from 'react-icons/fa';
+import { MdForward10, MdReplay10 } from "react-icons/md";
 import './AudioPlayer.css';
 
 interface AudioPlayerProps {
-  audioSrc: string;
+  book: Book;
 }
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioSrc }) => {
+const AudioPlayer: React.FC<AudioPlayerProps> = ({ book }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -17,9 +19,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioSrc }) => {
   const animationRef = useRef<number>();
 
   useEffect(() => {
-    const seconds = Math.floor(audioPlayer.current?.duration || 0);
-    setDuration(seconds);
-    progressBar.current!.max = String(seconds);
+    if (audioPlayer.current) {
+        const seconds = Math.floor(audioPlayer.current.duration);
+        setDuration(seconds);
+        if (progressBar.current) {
+            progressBar.current.max = String(seconds);
+        }
+    }
   }, [audioPlayer?.current?.onloadedmetadata, audioPlayer?.current?.readyState]);
 
   const calculateTime = (secs: number) => {
@@ -43,48 +49,71 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioSrc }) => {
   }
 
   const whilePlaying = () => {
-    progressBar.current!.value = String(audioPlayer.current?.currentTime || 0);
-    changePlayerCurrentTime();
-    animationRef.current = requestAnimationFrame(whilePlaying);
+    if (audioPlayer.current && progressBar.current) {
+        progressBar.current.value = String(audioPlayer.current.currentTime);
+        changePlayerCurrentTime();
+        animationRef.current = requestAnimationFrame(whilePlaying);
+    }
   }
 
   const changeRange = () => {
-    audioPlayer.current!.currentTime = Number(progressBar.current?.value || 0);
-    changePlayerCurrentTime();
+    if (audioPlayer.current && progressBar.current) {
+        audioPlayer.current.currentTime = Number(progressBar.current.value);
+        changePlayerCurrentTime();
+    }
   }
 
   const changePlayerCurrentTime = () => {
-    progressBar.current?.style.setProperty('--seek-before-width', `${Number(progressBar.current.value) / duration * 100}%`);
-    setCurrentTime(Number(progressBar.current?.value));
+    if (progressBar.current) {
+        progressBar.current.style.setProperty('--seek-before-width', `${Number(progressBar.current.value) / duration * 100}%`);
+        setCurrentTime(Number(progressBar.current.value));
+    }
   }
 
-  const backThirty = () => {
-    progressBar.current!.value = String(Number(progressBar.current?.value) - 15);
-    changeRange();
+  const backward10 = () => {
+    if (progressBar.current) {
+        const newValue = Number(progressBar.current.value) - 10;
+        progressBar.current.value = String(newValue < 0 ? 0 : newValue);
+        changeRange();
+    }
   }
 
-  const forwardThirty = () => {
-    progressBar.current!.value = String(Number(progressBar.current?.value) + 15);
-    changeRange();
+  const forward10 = () => {
+    if (progressBar.current && audioPlayer.current) {
+        const newValue = Number(progressBar.current.value) + 10;
+        progressBar.current.value = String(newValue > duration ? duration : newValue);
+        changeRange();
+    }
   }
 
   return (
-    <div className="audioPlayer">
-      <audio ref={audioPlayer} src={audioSrc} preload="metadata"></audio>
-      
-      <div className="audioPlayer__controls">
-        <button className="audioPlayer__btn" onClick={backThirty}><FaBackward /> </button>
-        <button onClick={togglePlayPause} className="audioPlayer__playPause">
-          {isPlaying ? <FaPause /> : <FaPlay />}
-        </button>
-        <button className="audioPlayer__btn" onClick={forwardThirty}><FaForward /></button>
-      </div>
-
-      <div className="audioPlayer__progressBar-wrapper">
-        <div className="audioPlayer__time">{calculateTime(currentTime)}</div>
-        <input type="range" className="audioPlayer__progressBar" defaultValue="0" ref={progressBar} onChange={changeRange} />
-        <div className="audioPlayer__time">{(duration && !isNaN(duration)) && calculateTime(duration)}</div>
-      </div>
+    <div className="audio-player__wrapper">
+        <audio ref={audioPlayer} src={book.audioLink} preload="metadata" onLoadedMetadata={() => {
+            const seconds = Math.floor(audioPlayer.current!.duration);
+            setDuration(seconds);
+            progressBar.current!.max = String(seconds);
+        }}></audio>
+        <div className="audio-player__book-info">
+            <figure className="audio-player__book-image--wrapper">
+                <img src={book.imageLink} alt={book.title} />
+            </figure>
+            <div className="audio-player__book-text">
+                <div className="audio-player__book-title">{book.title}</div>
+                <div className="audio-player__book-author">{book.author}</div>
+            </div>
+        </div>
+        <div className="audio-player__main-controls">
+            <button className="audio-player__btn" onClick={backward10}><MdReplay10 /></button>
+            <button onClick={togglePlayPause} className="audio-player__play-pause-btn">
+            {isPlaying ? <FaPause /> : <FaPlay />}
+            </button>
+            <button className="audio-player__btn" onClick={forward10}><MdForward10 /></button>
+        </div>
+        <div className="audio-player__progress-wrapper">
+            <div className="audio-player__time">{calculateTime(currentTime)}</div>
+            <input type="range" className="audio-player__progress-bar" defaultValue="0" ref={progressBar} onChange={changeRange} />
+            <div className="audio-player__time">{(duration && !isNaN(duration)) && calculateTime(duration)}</div>
+        </div>
     </div>
   )
 }

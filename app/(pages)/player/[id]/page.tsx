@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Book } from "@/src/types";
@@ -34,21 +34,23 @@ const PlayerPage = () => {
 
   return (
     <div className="player__wrapper">
-      {loading ? (
-        <div className="player__container--skeleton">
-          <Skeleton width="100%" height="100%" />
-        </div>
-      ) : book ? (
         <div className="player__container">
-          <div className="player__title">{book.title}</div>
-          <div className="player__summary" style={{ whiteSpace: "pre-line" }}>
-            {book.summary}
-          </div>
-          <AudioPlayer audioSrc={book.audioLink} />
+            {loading ? (
+                <div className="player__container--skeleton">
+                <Skeleton width="100%" height="100%" />
+                </div>
+            ) : book ? (
+                <div className="player__book-details">
+                    <h1 className="player__book-title">{book.title}</h1>
+                    <p className="player__book-summary" style={{ whiteSpace: "pre-line" }}>
+                        {book.summary}
+                    </p>
+                </div>
+            ) : (
+                <div>Book not found.</div>
+            )}
         </div>
-      ) : (
-        <div>Book not found.</div>
-      )}
+      {book && <AudioPlayer book={book} />}
     </div>
   );
 };

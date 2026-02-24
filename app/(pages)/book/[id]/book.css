@@ -1,6 +1,7 @@
 .book__wrapper {
     background-color: #f1f6f4;
     min-height: 100vh;
+    padding: 32px 0;
 }
 
 .book__container {
@@ -20,7 +21,7 @@
 .book__main-content {
     display: flex;
     justify-content: space-between;
-    gap: 32px;
+    gap: 64px;
     margin-bottom: 48px;
 }
 
@@ -30,13 +31,19 @@
 
 .book__image--wrapper {
     flex-shrink: 0;
+    width: 300px;
+    height: 300px;
+    clip-path: ellipse(120% 100% at 50% 0%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .book__image {
-    width: 300px;
-    height: 300px;
-    object-fit: cover;
-    border-radius: 8px;
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: contain;
 }
 
 .book__title {
@@ -44,6 +51,10 @@
     font-weight: bold;
     color: #032b41;
     margin-bottom: 8px;
+}
+
+.book__premium-tag {
+    color: #6b7280;
 }
 
 .book__author {
@@ -60,11 +71,11 @@
     margin-bottom: 24px;
 }
 
-.book__details-wrapper {
-    display: flex;
-    gap: 24px;
-    align-items: center;
-    margin-bottom: 32px;
+.book__details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
 }
 
 .book__details-item {
@@ -87,71 +98,86 @@
 .book__actions {
     display: flex;
     gap: 16px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
 }
 
-.book__listen-btn, .book__save-btn {
+.book__action-btn {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     padding: 12px 24px;
-    border-radius: 8px;
+    border-radius: 4px;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
     text-decoration: none;
+    flex: 1;
 }
 
-.book__listen-btn {
+.book__read-btn {
     background-color: #032b41;
     color: white;
     border: 1px solid #032b41;
 }
 
-.book__save-btn {
+.book__listen-btn {
     background-color: white;
     color: #032b41;
     border: 1px solid #032b41;
 }
 
-.book__listen-icon, .book__save-icon {
+.book__action-icon {
     font-size: 20px;
 }
 
-.book__tabs {
+.book__add-to-library-btn {
     display: flex;
-    border-bottom: 1px solid #e1e7ea;
-    margin-bottom: 24px;
-}
-
-.book__tab {
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     background: none;
     border: none;
-    padding: 12px 0;
-    margin-right: 32px;
-    font-size: 18px;
+    color: #03658d;
+    font-size: 16px;
     font-weight: 500;
     cursor: pointer;
-    color: #6b7280;
-    position: relative;
-}
-
-.book__tab--active {
-    color: #032b41;
-    font-weight: bold;
-}
-
-.book__tab--active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
     width: 100%;
-    height: 2px;
-    background-color: #032b41;
+    margin-bottom: 48px;
 }
 
-.book__tab-content {
+.book__save-icon {
+    font-size: 20px;
+}
+
+.book__description-section {
+    margin-bottom: 32px;
+}
+
+.book__description-heading {
+    font-size: 24px;
+    font-weight: bold;
+    color: #032b41;
+    margin-bottom: 16px;
+}
+
+.book__tags-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.book__tag {
+    background-color: #f1f6f4;
+    color: #032b41;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.book__description-text {
     font-size: 16px;
     line-height: 1.6;
     color: #394547;

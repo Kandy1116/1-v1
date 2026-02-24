@@ -1,17 +1,63 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import BookPill from '@/src/components/BookPill';
 import Skeleton from '@/src/components/Skeleton';
 import { Book } from '@/src/types';
 import './for-you.css';
-import { BsFillPlayFill } from 'react-icons/bs';
+import { BsFillPlayFill, BsFillPauseFill } from 'react-icons/bs';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@/src/UserContext';
 
 const ForYouPage = () => {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [recommendedBooks, setRecommendedBooks] = useState<Book[]>([]);
   const [suggestedBooks, setSuggestedBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user, openModal } = useUser();
+  const router = useRouter();
+  const [activeAudio, setActiveAudio] = useState<{ id: string; audioLink: string } | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const handlePlay = (e: React.MouseEvent, book: Book) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (!user) {
+        openModal();
+        return;
+    }
+
+    if (book.subscriptionRequired) { 
+        router.push('/choose-plan');
+        return;
+    }
+
+    if (activeAudio?.id === book.id) {
+        if (isPlaying) {
+            audioRef.current?.pause();
+            setIsPlaying(false);
+        } else {
+            audioRef.current?.play();
+            setIsPlaying(true);
+        }
+    } else {
+        setActiveAudio({ id: book.id, audioLink: book.audioLink });
+    }
+  };
+
+  useEffect(() => {
+    if (activeAudio) {
+        audioRef.current?.load();
+        audioRef.current?.play().then(() => {
+            setIsPlaying(true);
+        }).catch(error => {
+            console.error("Audio play failed", error);
+            setIsPlaying(false);
+        });
+    }
+  }, [activeAudio]);
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -70,12 +116,12 @@ const ForYouPage = () => {
                                     <div className="selected-book__text">
                                         <div className="selected-book__title">{selectedBook.title}</div>
                                         <div className="selected-book__author">{selectedBook.author}</div>
-                                        <div className="selected-book__audio">
+                                        <button className="selected-book__audio" onClick={(e) => handlePlay(e, selectedBook)}>
                                             <div className="selected-book__play-icon">
-                                                <BsFillPlayFill />
+                                                {isPlaying && activeAudio?.id === selectedBook.id ? <BsFillPauseFill /> : <BsFillPlayFill />}
                                             </div>
-                                            <span>3 mins 23 secs</span>
-                                        </div>
+                                            <span>{selectedBook.audioLength} mins</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -93,6 +139,7 @@ const ForYouPage = () => {
                     <div className="foryou__books-grid">
                         {suggestedBooks.map(book => <BookPill key={book.id} book={book} />)}
                     </div>
+                    <audio ref={audioRef} src={activeAudio?.audioLink} onEnded={() => setIsPlaying(false)} />
                 </>
             )}
         </div>
